@@ -11,9 +11,11 @@ import {
 } from 'react-native';
 import { createComment } from './api';
 
+import {Comment as CommentType} from '../proto/comments/comments'
+
 interface AddCommentFormProps {
   resourceId: string;
-  onCommentAdded: () => void;
+  onCommentAdded: (newComment: CommentType) => void; // Expect newComment as an argument
   parentId?: string | null; // Optional parentId prop
   hideAddCommentForm: () => void; // Function to hide the form
 }
@@ -29,26 +31,31 @@ const AddCommentForm: React.FC<AddCommentFormProps> = ({
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    // Trim inputs to remove unnecessary whitespace
     const trimmedAuthor = author.trim();
     const trimmedContent = content.trim();
-
+  
     if (!trimmedAuthor || !trimmedContent) {
       Alert.alert('Validation Error', 'Please enter both author and content.');
       return;
     }
-
+  
     setLoading(true);
     try {
-      await createComment({
+      const newComment = await createComment({
         content: trimmedContent,
         author: trimmedAuthor,
-        resourceId: resourceId,
-        parentId: String(parentId), // Convert to string if present
+        resourceId,
+        parentId: parentId ?? "", // Use empty string if parentId is null or undefined
       });
+  
+      // Ensure the `createdAt` field is correctly formatted as a valid ISO string
+      const createdAt = new Date().toISOString();
+      const formattedComment = { ...newComment, createdAt };
+  
+      onCommentAdded(formattedComment); // Pass the formatted comment to parent
       setContent('');
       setAuthor('');
-      onCommentAdded();
+      hideAddCommentForm(); // Hide the form after submission
       Alert.alert('Success', 'Your comment has been added.');
     } catch (error) {
       console.error('Error adding comment:', error);

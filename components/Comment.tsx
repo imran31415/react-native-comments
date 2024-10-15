@@ -17,7 +17,7 @@ type CommentWithChildren = CommentType & {
 
 interface CommentProps {
   comment: CommentWithChildren;
-  onCommentAdded: () => void;
+  onCommentAdded: (comment: CommentType) => void;
   level?: number;
   onMoreReplies?: (selectedComment: CommentType) => void;
 }

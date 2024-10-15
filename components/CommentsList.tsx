@@ -51,33 +51,33 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   // Function to load comments, optionally loading more (pagination)
   const loadComments = async (loadMore = false) => {
     if (loadingMore || (loadMore && allLoaded)) return; // Avoid redundant calls
-
+  
     loadMore ? setLoadingMore(true) : setLoading(true);
-
+  
     try {
       const formattedPaginationKey = paginationKey || undefined;
-
+  
       const params: GetPaginatedCommentsRequest = {
-        resourceId: resourceId,
+        resourceId,
         limit,
         order: SortOrder.DESC,
         column: CommentSortColumn.COMMENT_CREATED_AT,
         ...(formattedPaginationKey ? { string_key: formattedPaginationKey } : {}),
         filters: parentId
           ? { filters: [{ field: CommentFilterField.FILTER_PARENT_ID, value: parentId }] }
-          : { filters: [{ field: CommentFilterField.FILTER_NULL_PARENT_ID, value: "" }] },
+          : { filters: [] }, // Remove the unnecessary FILTER_NULL_PARENT_ID
       };
-
-      console.log('Fetching comments with params:', params); // Debugging payload
-
+  
+      console.log('Fetching comments with params:', params);
+  
       const response: CommentWithChildren[] = await fetchComments(params);
-
+  
       if (response.length > 0) {
-        setComments((prev) => [...prev, ...response]); // Set the comments state correctly
-
+        setComments((prev) => [...prev, ...response]);
+  
         const lastComment = response[response.length - 1];
-        setPaginationKey(lastComment.createdAt); // Correctly set pagination key
-
+        setPaginationKey(lastComment.createdAt);
+  
         if (response.length < limit) setAllLoaded(true);
       } else {
         setAllLoaded(true);
@@ -89,7 +89,6 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       loadMore ? setLoadingMore(false) : setLoading(false);
     }
   };
-
   // Callback to handle "More Replies" action from Comment component
   const handleMoreReplies = (selectedComment: CommentType) => {
     setParentComment(selectedComment); // Set the clicked comment as the parent comment
@@ -100,15 +99,36 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   };
 
   // Handler for adding a new comment
-  const handleCommentAdded = () => {
-    // Reset comments and reload to include the new comment
-    setComments([]);
-    setPaginationKey(null);
-    setAllLoaded(false);
-    loadComments();
-    setShowAddCommentForm(false); // Hide the form after adding
-    setCurrentParentId(null); // Reset the parent ID
-  };
+ // Handler for adding a new comment
+// Handler for adding a new comment
+const handleCommentAdded = (newComment: CommentType) => {
+  if (newComment.parentId) {
+    // If the new comment is a reply to an existing comment
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.id === newComment.parentId
+          ? {
+              ...comment,
+              children: [...(comment.children || []), newComment], // Add to child comments
+            }
+          : comment
+      )
+    );
+  } else {
+    // If it's a top-level comment, add it to the top of the list
+    setComments((prevComments) => [newComment, ...prevComments]);
+  }
+
+  // Hide the AddCommentForm
+  setShowAddCommentForm(false);
+  setCurrentParentId(null); // Reset parent ID tracking
+  setPaginationKey(null);
+
+  // Ensure the new comment is properly displayed by resetting parent ID if needed
+  if (parentId) {
+    setParentId(null); // Reset parent ID to return to main list if necessary
+  }
+};
 
   // Handler to go back to the main comments list
   const handleBack = () => {
