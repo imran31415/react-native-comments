@@ -63,9 +63,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
         order: SortOrder.DESC,
         column: CommentSortColumn.COMMENT_CREATED_AT,
         ...(formattedPaginationKey ? { string_key: formattedPaginationKey } : {}),
-        filters: parentId
-          ? { filters: [{ field: CommentFilterField.FILTER_PARENT_ID, value: parentId }] }
-          : { filters: [] }, // Remove the unnecessary FILTER_NULL_PARENT_ID
+        filters:  { filters: [{field: CommentFilterField.FILTER_NULL_PARENT_ID, value: ""}] }, // Remove the unnecessary FILTER_NULL_PARENT_ID
       };
   
       console.log('Fetching comments with params:', params);
