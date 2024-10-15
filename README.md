@@ -1,50 +1,109 @@
-# Welcome to your Expo app 👋
+# Comments App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a React Native application that allows users to view and manage nested comments. The app uses **Expo** for easy development and supports both **iOS** and **web** platforms. It features a comments list with pagination and nested replies.
 
-## Get started
+---
 
-1. Install dependencies
+## Features
 
+- View a list of comments with pagination.
+- Reply to comments, supporting nested child comments.
+- Dynamically load more replies for each comment.
+- Supports both **web** and **iOS** via **Expo**.
+- Uses `protobuf` to structure and manage comments data.
+
+---
+
+## Prerequisites
+
+Ensure you have the following tools installed:
+
+- **Node.js** (version 18 or higher) – [Install Node.js](https://nodejs.org)
+- **Expo CLI** – Install globally using:
+  ```bash
+  npm install --global expo-cli
+  ```
+- **iOS Simulator** (for Mac users) or a **physical device** for testing.
+
+---
+
+## Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd comments-app
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start the Expo server:**
    ```bash
-    npx expo start
+   npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Run on iOS or web:**
+   - Press **`i`** to launch the **iOS simulator**.
+   - Press **`w`** to open the app in a **web browser**.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Folder Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+/components
+  ├── CommentsList.tsx
+  ├── Comment.tsx
+/proto
+  └── comments/comments.ts
+/screens
+  └── Index.tsx
+App.tsx
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Configuration
 
-To learn more about developing your project with Expo, look at the following resources:
+Ensure that the backend API and protobuf files are properly configured. Adjust the `API_BASE_URL` in `api.ts` to match your backend URL.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Troubleshooting
 
-Join our community of developers creating universal apps.
+- **Metro bundler errors**: Clear the cache and restart the server:
+  ```bash
+  npx expo start --clear
+  ```
+- **iOS simulator issues**: Ensure Xcode is installed and updated.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## Dependencies
+
+- **React Native**: For building the mobile app.
+- **Expo**: Development framework.
+- **react-native-paper**: UI components.
+- **axios**: For API requests.
+- **protobuf**: For structured data management.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Contributing
+
+Feel free to fork the repository and submit pull requests.
+
+---
+
+## Author
+
+Created by Imran Hassanali
