@@ -136,13 +136,18 @@ const Comment: React.FC<CommentProps> = ({
 
         {!allChildrenLoaded && (
           isBeyondMaxLevel ? (
+            <View style={styles.buttonContainer}>
             <Button title="More Replies" onPress={() => handleMoreReplies(comment)} />
+            </View>
           ) : (
-            <Button
+            <View style={styles.buttonContainer}>
+            <Button 
               title="Load more children"
               onPress={() => loadChildren(true)}
               disabled={loadingChildren}
             />
+                        </View>
+
           )
         )}
 
@@ -178,6 +183,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    marginTop: 10,
+    alignSelf: 'center', // Center the button horizontally
+    maxWidth: 200, // Limit button width
+    width: '100%', // Allow it to take full width if smaller than maxWidth
   },
 });
 

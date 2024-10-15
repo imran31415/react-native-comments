@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   },
   topAddCommentButton: {
     marginBottom: 10,
+    maxWidth: 200,
   },
   loadingIndicator: {
     flex: 1,
@@ -234,6 +235,7 @@ const styles = StyleSheet.create({
   },
   loadMoreContainer: {
     marginTop: 10,
+    maxWidth:200,
   },
   parentCommentContainer: {
     marginBottom: 10,
