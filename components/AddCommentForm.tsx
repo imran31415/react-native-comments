@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { createComment } from './api';
 
-import {Comment as CommentType} from '../proto/comments/comments'
+import { Comment as CommentType } from '../proto/comments/comments';
 
 interface AddCommentFormProps {
   resourceId: string;
@@ -33,26 +33,23 @@ const AddCommentForm: React.FC<AddCommentFormProps> = ({
   const handleSubmit = async () => {
     const trimmedAuthor = author.trim();
     const trimmedContent = content.trim();
-  
+
     if (!trimmedAuthor || !trimmedContent) {
       Alert.alert('Validation Error', 'Please enter both author and content.');
       return;
     }
-  
+
     setLoading(true);
     try {
       const newComment = await createComment({
         content: trimmedContent,
         author: trimmedAuthor,
         resourceId,
-        parentId: parentId ?? "", // Use empty string if parentId is null or undefined
+        parentId: parentId || "", // Use empty string if parentId is null or undefined
       });
-  
-      // Ensure the `createdAt` field is correctly formatted as a valid ISO string
-      const createdAt = new Date().toISOString();
-      const formattedComment = { ...newComment, createdAt };
-  
-      onCommentAdded(formattedComment); // Pass the formatted comment to parent
+
+      // Let the backend handle the `createdAt` timestamp
+      onCommentAdded(newComment); // Pass the new comment directly to parent
       setContent('');
       setAuthor('');
       hideAddCommentForm(); // Hide the form after submission

@@ -63,7 +63,23 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
         order: SortOrder.DESC,
         column: CommentSortColumn.COMMENT_CREATED_AT,
         ...(formattedPaginationKey ? { string_key: formattedPaginationKey } : {}),
-        filters:  { filters: [{field: CommentFilterField.FILTER_NULL_PARENT_ID, value: ""}] }, // Remove the unnecessary FILTER_NULL_PARENT_ID
+        filters: parentId
+          ? {
+              filters: [
+                {
+                  field: CommentFilterField.FILTER_PARENT_ID,
+                  value: parentId,
+                },
+              ],
+            }
+          : {
+              filters: [
+                {
+                  field: CommentFilterField.FILTER_NULL_PARENT_ID,
+                  value: "",
+                },
+              ],
+            },
       };
   
       console.log('Fetching comments with params:', params);
@@ -96,38 +112,27 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     setShowAddCommentForm(true); // Show the AddCommentForm
   };
 
-  // Handler for adding a new comment
- // Handler for adding a new comment
-// Handler for adding a new comment
-const handleCommentAdded = (newComment: CommentType) => {
-  if (newComment.parentId) {
-    // If the new comment is a reply to an existing comment
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === newComment.parentId
-          ? {
-              ...comment,
-              children: [...(comment.children || []), newComment], // Add to child comments
-            }
-          : comment
-      )
-    );
-  } else {
-    // If it's a top-level comment, add it to the top of the list
-    setComments((prevComments) => [newComment, ...prevComments]);
-  }
-
-  // Hide the AddCommentForm
-  setShowAddCommentForm(false);
-  setCurrentParentId(null); // Reset parent ID tracking
-  setPaginationKey(null);
-
-  // Ensure the new comment is properly displayed by resetting parent ID if needed
-  if (parentId) {
-    setParentId(null); // Reset parent ID to return to main list if necessary
-  }
-};
-
+  const handleCommentAdded = (newComment: CommentType) => {
+    if (newComment.parentId) {
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === newComment.parentId
+            ? {
+                ...comment,
+                children: [...(comment.children || []), newComment],
+              }
+            : comment
+        )
+      );
+    } else {
+      setComments((prevComments) => [newComment, ...prevComments]);
+    }
+  
+    setShowAddCommentForm(false);
+    setCurrentParentId(null);
+    setPaginationKey(null);
+    // Removed the resetting of parentId
+  };
   // Handler to go back to the main comments list
   const handleBack = () => {
     setParentId(null);
