@@ -8,9 +8,7 @@ import {
   CommentFilterField 
 } from '../proto/comments/comments'
 
-const API_BASE_URL = 'https://192.168.1.95:8443/v1'; // Adjust as needed
-
-// Helper function to convert enums to string values for API compatibility
+const API_BASE_URL = 'http://localhost:8086/v1'; // Ensure this matches the certificate// Helper function to convert enums to string values for API compatibility
 const sortOrderToString = (order: SortOrder): string => {
   switch (order) {
     case SortOrder.ASC:
@@ -62,6 +60,8 @@ export const fetchComments = async (
     };
 
     console.log('Fetching comments with params:', formattedParams); // Debugging
+    console.log('Fetching comments with filter  params:', formattedParams.filters.filters); // Debugging
+
 
     const response = await axios.post(`${API_BASE_URL}/comments`, formattedParams);
 
