@@ -159,9 +159,10 @@ const Comment: React.FC<CommentProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 3,
+    maxWidth:1000,
+    marginVertical: 1,
     backgroundColor: '#f9f9f9',
-    padding: 3,
+    padding: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentText: {
-    marginBottom: 5,
+    // marginBottom: 5,
   },
   dateText: {
     color: 'gray',
@@ -185,8 +186,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonContainer: {
-    marginTop: 10,
-    alignSelf: 'center', // Center the button horizontally
+    marginTop: 3,
     maxWidth: 200, // Limit button width
     width: '100%', // Allow it to take full width if smaller than maxWidth
   },

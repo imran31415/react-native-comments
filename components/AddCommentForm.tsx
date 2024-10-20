@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f2f2f2',
     borderRadius: 8,
+    maxWidth:1000,
   },
   replyingText: {
     marginBottom: 10,
