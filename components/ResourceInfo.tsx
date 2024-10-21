@@ -1,14 +1,15 @@
 // ResourceInfo.tsx
+// ResourceInfo.tsx
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Card } from 'react-native-paper';
 import ExpandableText from './ExpandableText'; // Ensure the path is correct based on your project structure
 
 interface ResourceInfoProps {
-  // If you plan to make it dynamic in the future, you can pass resourceId as a prop
+  parentCommentId?: string | null; // Accept parentCommentId as a prop
 }
 
-const ResourceInfo: React.FC<ResourceInfoProps> = () => {
+const ResourceInfo: React.FC<ResourceInfoProps> = ({ parentCommentId }) => {
   // Mock data for the resource
   const resource = {
     id: '2',
@@ -17,53 +18,43 @@ const ResourceInfo: React.FC<ResourceInfoProps> = () => {
     content: `
   In an unprecedented scientific achievement, researchers from the Global Astrobiology Institute (GAI) have confirmed the existence of extraterrestrial life forms. The discovery was made using advanced telescopic technology and sophisticated data analysis techniques that detected bio-signatures previously thought to be unattainable.
   
-  The evidence was gathered from a distant exoplanet located within the habitable zone of its star system, approximately 150 light-years from Earth. The team identified complex organic molecules in the planet’s atmosphere, along with unusual light patterns that suggest the presence of intelligent life. These findings were corroborated by multiple independent observatories, ensuring the reliability of the data.
-  
-  Dr. Emily Zhang, the lead scientist on the project, stated, "This discovery fundamentally changes our understanding of life in the universe. The organic compounds we've detected are consistent with the metabolic processes of a technologically advanced civilization." The scientific community has lauded the breakthrough, emphasizing its potential to answer one of humanity’s most profound questions: Are we alone in the universe?
-  
-  The implications of this discovery extend beyond pure science. It opens up possibilities for future interstellar communication and collaboration, challenging us to rethink our place in the cosmos. As researchers continue to analyze the data, plans are underway for sending exploratory missions to gather more detailed information about the newly discovered life forms.
-  
-  This monumental announcement has sparked excitement and curiosity worldwide, reigniting the age-old fascination with the unknown and setting the stage for a new era of space exploration and discovery.
-    `,
+  ...`, // Shortened for brevity
     author: 'Dr. Elena Ramirez',
     images: [
       'https://i.imgur.com/XlxjRBr.jpeg',
       'https://i.imgur.com/5EiGZCJ.jpeg',
       'https://i.imgur.com/tndnH7A.png',
-      // Add more URLs if needed, but only the first three will be displayed
     ],
   };
 
   return (
     <Card style={styles.card}>
       <Card.Content>
-        {/* Header */}
-        <Text style={styles.header}>{resource.header}</Text>
-        
-        {/* Author */}
-        <Text style={styles.author}>By: {resource.author}</Text>
+        {/* Conditional rendering based on parentCommentId */}
+        {parentCommentId ? (
+          // Show only title and author when in reply mode
+          <View>
+            <Text style={styles.header}>{resource.header}</Text>
+            <Text style={styles.author}>By: {resource.author}</Text>
+          </View>
+        ) : (
+          <>
+            {/* Full resource information when not in reply mode */}
+            <Text style={styles.header}>{resource.header}</Text>
+            <Text style={styles.author}>By: {resource.author}</Text>
+            <Text style={styles.description}>{resource.description}</Text>
 
-        {/* Description */}
-        <Text style={styles.description}>{resource.description}</Text>
+            {/* Content with ExpandableText */}
+            <ExpandableText text={resource.content} style={styles.content} characterLimit={100} />
 
-        {/* Content with ExpandableText */}
-        <ExpandableText
-          text={resource.content}
-          style={styles.content}
-          characterLimit={200}
-        />
-
-        {/* Images */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
-          {resource.images.slice(0, 3).map((imageUri, index) => (
-            <Image
-              key={index}
-              source={{ uri: imageUri }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          ))}
-        </ScrollView>
+            {/* Images */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
+              {resource.images.slice(0, 3).map((imageUri, index) => (
+                <Image key={index} source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+              ))}
+            </ScrollView>
+          </>
+        )}
       </Card.Content>
     </Card>
   );
@@ -107,10 +98,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     borderRadius: 5,
-    marginRight: 10,
+
   },
 });
 

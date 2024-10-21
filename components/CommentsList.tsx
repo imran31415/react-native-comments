@@ -8,6 +8,7 @@ import {
   Text,
   Alert,
   Button,
+  Image
 } from 'react-native';
 import { fetchComments } from './api';
 
@@ -187,7 +188,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     setParentComment(null);
     setShowAddCommentForm(false);
     setComments([]);           // Reset comments
-    setPaginationKey(null);    // Reset paginationKey
+    // setPaginationKey(null);    // Reset paginationKey
     setAllLoaded(false);       // Reset allLoaded flag
 
     try {
@@ -239,21 +240,36 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       style={styles.container}
       contentContainerStyle={{ paddingBottom: 20 }}
     >
-      {/* Render ResourceInfo */}
-      <ResourceInfo />
+<ResourceInfo parentCommentId={parentId} />
+       <CommentsDashboard
+        onAddComment={handleShowAddCommentForm}
+        onBack={handleBack}
+        onRefresh={refreshComments}
+        paginationKey={paginationKey}
+        sortOrder={getSortOrderString(sortOrder)}
+        currentPageCount={currentPageCount}
+        hasItems={hasItems} // New prop to indicate if items are present
+        parentId={parentId}
+      />
 
-      {/* Display "Back" button when viewing child comments */}
-      {parentId && (
-        <View style={styles.backButtonContainer}>
-          <Button title="← Back to all comments" onPress={handleBack} />
-        </View>
-      )}
       {/* Display Parent Comment Information when viewing child comments */}
       {parentComment && (
         <View style={styles.parentCommentContainer}>
+          
+          
           <Card style={styles.parentCard}>
+            
             <Card.Content>
-              <Text style={styles.parentAuthorText}>{`#${parentComment.id} ${parentComment.author}`}</Text>
+            <Text style={styles.replyLabelHeader}>Viewing Comments for:</Text>
+
+            <View style={styles.parentHeader}>
+            <Image 
+                source={{ uri: 'https://cdn.pixabay.com/photo/2021/02/27/16/25/woman-6055084_1280.jpg' }} // Default placeholder image
+                style={styles.parentAvatar}
+              />
+                <Text style={styles.parentAuthorText}>{`#${parentComment.id} ${parentComment.author}`}</Text>
+                </View>
+              
               <Text style={styles.parentContentText}>{parentComment.content}</Text>
               <Text style={styles.parentDateText}>
                 {new Date(parentComment.createdAt.replace(' ', 'T')).toLocaleString()}
@@ -263,15 +279,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
         </View>
       )}
 
-      {/* Replace the existing buttons with CommentsDashboard */}
-      <CommentsDashboard
-        onAddComment={handleShowAddCommentForm}
-        onRefresh={refreshComments}
-        paginationKey={paginationKey}
-        sortOrder={getSortOrderString(sortOrder)}
-        currentPageCount={currentPageCount}
-        hasItems={hasItems} // New prop to indicate if items are present
-      />
+     
 
       {/* Conditionally Render AddCommentForm */}
       {showAddCommentForm && (
@@ -322,7 +330,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 5,
   },
   loadingIndicator: {
     flex: 1,
@@ -331,9 +339,6 @@ const styles = StyleSheet.create({
   },
   loadingMoreIndicator: {
     marginTop: 10,
-  },
-  backButtonContainer: {
-    marginBottom: 10,
   },
   headingText: {
     fontSize: 18,
@@ -348,12 +353,30 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   parentCard: {
-    backgroundColor: '#e0f7fa', // Different background to distinguish
+    backgroundColor: '#e0f7fa', // Subtle color
     padding: 10,
+    borderRadius: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    elevation: 3,
+    maxWidth: 600,
+  },
+  parentHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5, // Add margin for spacing
+  },
+  replyLabelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10, // Add margin for spacing
+  },
+  parentAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20, // Make it circular
+    marginRight: 10,
   },
   parentAuthorText: {
     fontSize: 16,

@@ -1,20 +1,23 @@
-// CommentsDashboard.tsx
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'; // Ensure you have @expo/vector-icons installed
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface CommentsDashboardProps {
   onAddComment: () => void;
   onRefresh: () => void;
+  onBack: () => void;
   paginationKey: string | null;
   sortOrder: 'ASC' | 'DESC';
   currentPageCount: number;
+  parentId: string | null;  // New prop to track if viewing replies
   hasItems: boolean; // New prop to determine if items are present
 }
 
 const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
   onAddComment,
   onRefresh,
+  onBack,
+  parentId,
   paginationKey,
   sortOrder,
   currentPageCount,
@@ -33,7 +36,7 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
           onPress={onAddComment}
           accessibilityLabel="Add a new comment"
         >
-          <MaterialIcons name="add-comment" size={20} color="#fff" />
+          <MaterialIcons name="add-comment" size={20} color="#ffffff" />
           <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
 
@@ -41,12 +44,22 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
         <TouchableOpacity
           style={styles.button}
           onPress={onRefresh}
-          accessibilityLabel="Next"
+          accessibilityLabel="Refresh Comments"
         >
-          <MaterialIcons name="arrow-forward" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Next Page</Text>
+          <MaterialIcons name="refresh" size={20} color="#ffffff" />
+          <Text style={styles.buttonText}>Refresh</Text>
         </TouchableOpacity>
-        
+
+        {parentId && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={onBack}
+            accessibilityLabel="Back to all comments"
+          >
+            <MaterialIcons name="arrow-back" size={20} color="#ffffff" />
+            <Text style={styles.buttonText}>Back</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Pagination Information */}
@@ -67,6 +80,11 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
+    maxWidth: 600,
+    padding: 10,
+    backgroundColor: '#f9f9f9', // Light background for the dashboard
+    borderRadius: 8,
+    elevation: 2, // Shadow effect
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -76,40 +94,35 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#007BFF', // Bootstrap Primary Color for consistency
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    borderRadius: 5,
+    backgroundColor: '#007BFF', // Primary color
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 30, // More rounded edges for a modern look
     alignItems: 'center',
-    marginHorizontal: 2,
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2, // For Android shadow
   },
   buttonText: {
-    color: '#fff',
-    marginLeft: 4,
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#ffffff',
+    marginLeft: 8,
+    fontSize: 16, // Slightly larger text for better readability
+    fontWeight: '600', // Bold text for emphasis
+  },
+  // Optional: Add a hover effect for web
+  buttonHover: {
+    backgroundColor: '#0056b3', // Darker shade for hover effect
   },
   infoContainer: {
-    marginTop: 5,
+    marginTop: 10,
     paddingHorizontal: 5,
   },
   infoText: {
     fontSize: 12,
     color: '#555',
-  },
-  returnButton: {
-    flexDirection: 'row',
-    backgroundColor: '#28a745', // Bootstrap Success Color
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  returnButtonText: {
-    color: '#fff',
-    marginLeft: 6,
-    fontSize: 14,
-    fontWeight: '600',
   },
 });
 
