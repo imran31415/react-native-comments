@@ -125,8 +125,13 @@ const Comment: React.FC<CommentProps> = ({
     <View style={{ marginLeft: indentation, marginTop: 8 }}>
       <Card style={styles.card}>
         <Card.Content>
+        <Text style={styles.dateText}>{new Date(comment.createdAt).toLocaleString()}</Text>
+        <Divider style={styles.divider} />
+
+
           {/* Header Section */}
           <View style={styles.header}>
+            
             <View style={styles.headerLeft}>
               <Image 
                 source={{ uri: 'https://cdn.pixabay.com/photo/2021/02/27/16/25/woman-6055084_1280.jpg' }} // Default placeholder image
@@ -135,7 +140,9 @@ const Comment: React.FC<CommentProps> = ({
               <Text style={styles.label}>Author:</Text>
               <Text style={styles.authorText}>{comment.author}</Text>
             </View>
-            <Text style={styles.dateText}>{new Date(comment.createdAt).toLocaleString()}</Text>
+
+
+
           </View>
 
           <Divider style={styles.divider} />
@@ -242,9 +249,13 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 12,
     color: '#666666',
+    marginTop:5,
+    marginBottom:5,
   },
   divider: {
     backgroundColor: '#e0e0e0',
+    marginTop:10,
+    marginBottom:10,
   },
   contentSection: {
     marginTop: 8,
