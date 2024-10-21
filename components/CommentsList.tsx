@@ -176,7 +176,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     }
 
     // Hide the AddCommentForm
-    setShowAddCommentForm(false);
+    // setShowAddCommentForm(false);
     setCurrentParentId(null); // Reset parent ID tracking
     // Do NOT reset parentId to maintain the current context
   };
@@ -210,16 +210,14 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
 
   // Handler to show the AddCommentForm for top-level comments
   const handleShowAddCommentForm = () => {
-    // setParentId(null); // Ensure parentId is null for top-level comment
-    // setCurrentParentId(null); // Reset currentParentId
     setShowAddCommentForm(true); // Show the form
-    // setParentComment(null); // Clear any existing parent comment
+    
   };
 
   // Handler to hide the AddCommentForm without submitting
   const hideAddCommentForm = () => {
     setShowAddCommentForm(false);
-    setCurrentParentId(null);
+    // setCurrentParentId(null);
   };
 
   // Handler to refresh comments
@@ -293,7 +291,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       {/* Optional: Display a heading when viewing child comments */}
       {parentId && <Text style={styles.headingText}>Replies</Text>}
       {!hasItems && (
-        <NoItemsFound onReturnToRoot={handleBack} />
+        <NoItemsFound onReturnToRoot={handleBackToFirstPage} />
       )}
 
       {/* Render Comments */}
