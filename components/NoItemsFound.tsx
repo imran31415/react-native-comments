@@ -5,15 +5,20 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 interface NoItemsFoundProps {
   onReturnToRoot: () => void;
+  onReturnToMainRoot: () => void;
 }
 
-const NoItemsFound: React.FC<NoItemsFoundProps> = ({ onReturnToRoot }) => {
+const NoItemsFound: React.FC<NoItemsFoundProps> = ({ onReturnToRoot, onReturnToMainRoot }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>No Items Found</Text>
       <TouchableOpacity style={styles.button} onPress={onReturnToRoot}>
         <MaterialIcons name="arrow-back" size={20} color="#fff" />
         <Text style={styles.buttonText}>Return to First page</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={onReturnToMainRoot}>
+        <MaterialIcons name="arrow-back" size={20} color="#fff" />
+        <Text style={styles.buttonText}>Return to Main page</Text>
       </TouchableOpacity>
     </View>
   );
@@ -23,6 +28,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     marginTop: 20,
+    maxWidth:600,
   },
   text: {
     fontSize: 16,
@@ -36,6 +42,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 5,
     alignItems: 'center',
+    margin:5,
   },
   buttonText: {
     color: '#fff',

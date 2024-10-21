@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 interface CommentsDashboardProps {
@@ -9,7 +9,7 @@ interface CommentsDashboardProps {
   paginationKey: string | null;
   sortOrder: 'ASC' | 'DESC';
   currentPageCount: number;
-  parentId: string | null;  // New prop to track if viewing replies
+  parentId: string | null; // New prop to track if viewing replies
   hasItems: boolean; // New prop to determine if items are present
 }
 
@@ -23,7 +23,6 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
   currentPageCount,
   hasItems,
 }) => {
-  // Determine the direction based on sortOrder
   const direction = sortOrder === 'ASC' ? 'After' : 'Before';
 
   return (
@@ -37,18 +36,18 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
           accessibilityLabel="Add a new comment"
         >
           <MaterialIcons name="add-comment" size={20} color="#ffffff" />
-          <Text style={styles.buttonText}>Add</Text>
+          <Text style={styles.buttonText}>Add Comment</Text>
         </TouchableOpacity>
 
         {/* Refresh Button */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.button}
           onPress={onRefresh}
           accessibilityLabel="Refresh Comments"
         >
           <MaterialIcons name="refresh" size={20} color="#ffffff" />
           <Text style={styles.buttonText}>Refresh</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {parentId && (
           <TouchableOpacity
@@ -57,13 +56,13 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
             accessibilityLabel="Back to all comments"
           >
             <MaterialIcons name="arrow-back" size={20} color="#ffffff" />
-            <Text style={styles.buttonText}>Back</Text>
+            <Text style={styles.buttonText}>Back to main thread</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Pagination Information */}
-      <View style={styles.infoContainer}>
+      {/* <View style={styles.infoContainer}>
         {paginationKey ? (
           <Text style={styles.infoText}>
             Pagination Key: {paginationKey} ({direction})
@@ -72,7 +71,7 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
           <Text style={styles.infoText}>Pagination Key: None</Text>
         )}
         <Text style={styles.infoText}>Items on this page: {currentPageCount}</Text>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -81,10 +80,14 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
     maxWidth: 600,
-    padding: 10,
-    backgroundColor: '#f9f9f9', // Light background for the dashboard
-    borderRadius: 8,
-    elevation: 2, // Shadow effect
+    padding: 15,
+    backgroundColor: '#ffffff', // Use white for a clean look
+    borderRadius: 10, // Slightly rounded corners
+    elevation: 3, // Shadow effect for depth
+    shadowColor: '#000', // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
+    shadowOpacity: 0.1, // Shadow opacity for iOS
+    shadowRadius: 4, // Shadow radius for iOS
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -94,35 +97,31 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#007BFF', // Primary color
+    backgroundColor: '#6c757d', // Neutral color for buttons
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 30, // More rounded edges for a modern look
+    borderRadius: 20, // More rounded edges for a modern look
     alignItems: 'center',
     marginHorizontal: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 2, // For Android shadow
+    elevation: 1, // Shadow for Android
   },
   buttonText: {
     color: '#ffffff',
     marginLeft: 8,
-    fontSize: 16, // Slightly larger text for better readability
-    fontWeight: '600', // Bold text for emphasis
-  },
-  // Optional: Add a hover effect for web
-  buttonHover: {
-    backgroundColor: '#0056b3', // Darker shade for hover effect
+    fontSize: 14, // Increase font size for better readability
+    fontWeight: '500', // Medium font weight for emphasis
   },
   infoContainer: {
     marginTop: 10,
     paddingHorizontal: 5,
   },
   infoText: {
-    fontSize: 12,
-    color: '#555',
+    fontSize: 14,
+    color: '#333', // Darker text for contrast
   },
 });
 

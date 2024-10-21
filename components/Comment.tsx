@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, Image, Animated } from 'react-native';
 import { Card, IconButton, Divider } from 'react-native-paper';
 import { fetchComments } from './api';
 import { 
@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 // Extend the Comment type to include children
 type CommentWithChildren = CommentType & {
   children?: CommentWithChildren[];
+  animatedValue?: Animated.Value; // Add animatedValue property
 };
 
 interface CommentProps {
@@ -23,8 +24,7 @@ interface CommentProps {
   onMoreReplies?: (selectedComment: CommentType) => void;
 }
 
-const MAX_LEVEL = 2;
-const INDENT_PER_LEVEL = 10; // Reduced indentation for compactness
+
 
 const Comment: React.FC<CommentProps> = ({
   comment,
@@ -64,7 +64,23 @@ const Comment: React.FC<CommentProps> = ({
           (newComment) => !children.some((child) => child.id === newComment.id)
         );
 
-        setChildren((prev) => [...prev, ...uniqueChildren]);
+        // Create an animated value for each new child comment
+        const newChildrenWithAnimation = uniqueChildren.map(child => ({
+          ...child,
+          animatedValue: new Animated.Value(0), // Initialize animated value
+        }));
+
+        // Set new children with animation
+        setChildren((prev) => [...prev, ...newChildrenWithAnimation]);
+
+        // Trigger animations for each new comment
+        newChildrenWithAnimation.forEach(child => {
+          Animated.timing(child.animatedValue, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }).start();
+        });
 
         const lastComment = fetchedChildComments[fetchedChildComments.length - 1];
         setPaginationKey(lastComment.createdAt);
@@ -82,6 +98,13 @@ const Comment: React.FC<CommentProps> = ({
     }
   };
 
+  // Automatically load child comments for parent comments and level 1 comments only
+  useEffect(() => {
+    if (level <= 0 && children.length < 3) {
+      loadChildren(); // Load children automatically when component mounts
+    }
+  }, [level, children.length]);
+
   // Handler for "More Replies" button
   const handleMoreReplies = (selectedComment: CommentType) => {
     setPaginationKey(null); // Reset pagination key
@@ -92,10 +115,11 @@ const Comment: React.FC<CommentProps> = ({
       onMoreReplies(selectedComment); // Pass the selected comment to the parent
     }
   };
-
+  const MAX_LEVEL = 0;
+  const INDENT_PER_LEVEL = 10; // Reduced indentation for compactness
   const effectiveLevel = Math.min(level, MAX_LEVEL);
   const indentation = effectiveLevel * INDENT_PER_LEVEL;
-  const isBeyondMaxLevel = level > MAX_LEVEL;
+  const isBeyondMaxLevel = level >= MAX_LEVEL;
 
   return (
     <View style={{ marginLeft: indentation, marginTop: 8 }}>
@@ -104,7 +128,6 @@ const Comment: React.FC<CommentProps> = ({
           {/* Header Section */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              {/* Profile Picture Avatar */}
               <Image 
                 source={{ uri: 'https://cdn.pixabay.com/photo/2021/02/27/16/25/woman-6055084_1280.jpg' }} // Default placeholder image
                 style={styles.avatar}
@@ -151,6 +174,7 @@ const Comment: React.FC<CommentProps> = ({
                   <MaterialIcons
                     name="keyboard-arrow-down"
                     size={24}
+                    color={'#6200ee'}
                   />
                 </TouchableOpacity>
               )
@@ -160,15 +184,19 @@ const Comment: React.FC<CommentProps> = ({
           {/* Loading Indicator */}
           {loadingChildren && <ActivityIndicator size="small" style={{ marginTop: 10 }} />}
 
-          {/* Render child comments */}
+          {/* Render child comments with animation */}
           {children.map((childComment) => (
-            <Comment
-              key={childComment.id}
-              comment={childComment}
-              onCommentAdded={onCommentAdded}
-              level={level + 1}
-              onMoreReplies={onMoreReplies}
-            />
+            <Animated.View 
+              key={childComment.id} 
+              style={{ opacity: childComment.animatedValue }}
+            >
+              <Comment
+                comment={childComment}
+                onCommentAdded={onCommentAdded}
+                level={level + 1}
+                onMoreReplies={onMoreReplies}
+              />
+            </Animated.View>
           ))}
         </Card.Content>
       </Card>

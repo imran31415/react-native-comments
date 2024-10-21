@@ -27,6 +27,8 @@ import CommentsDashboard from './CommentsDashboard'; // Import the updated compo
 import NoItemsFound from './NoItemsFound';
 import ResourceInfo from './ResourceInfo'; // Adjust the path based on your project structure
 
+import { Animated } from 'react-native'; // Ensure Animated is imported
+
 interface CommentsListProps {
   resourceId: string;
 }
@@ -57,6 +59,8 @@ const addCommentToComments = (
   });
 };
 
+
+
 // Helper function to map SortOrder enum to string
 const getSortOrderString = (order: SortOrder): 'ASC' | 'DESC' => {
   switch (order) {
@@ -82,9 +86,18 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   const [currentPageCount, setCurrentPageCount] = useState<number>(0); // New state for page count
   const sortOrder = SortOrder.DESC; // Define current sort order
   const limit = 5;
+  const fadeAnim = useState(new Animated.Value(0))[0]; // Initialize the animated value
 
   // Determine if there are any items to display
   const hasItems = comments.length > 0;
+
+  const handleScroll = (event: any) => {
+    const { contentOffset, layoutMeasurement, contentSize } = event.nativeEvent;
+    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20; // 20 pixels from the bottom
+    if (isCloseToBottom && !loadingMore && !allLoaded) {
+      loadComments(true); // Load more comments when close to bottom
+    }
+  };
 
   useEffect(() => {
     // Reset comments and pagination when parentId changes
@@ -139,6 +152,11 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
 
       if (response.length > 0) {
         setComments((prev) => [...prev, ...response]);
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
 
         const lastComment = response[response.length - 1];
         setPaginationKey(lastComment.createdAt);
@@ -152,6 +170,11 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       Alert.alert('Error', 'Failed to fetch comments.');
     } finally {
       loadMore ? setLoadingMore(false) : setLoading(false);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
     }
   };
 
@@ -190,6 +213,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     setComments([]);           // Reset comments
     // setPaginationKey(null);    // Reset paginationKey
     setAllLoaded(false);       // Reset allLoaded flag
+    setCurrentParentId(null);
 
     try {
       await loadComments();
@@ -236,10 +260,13 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   }
 
   return (
+
     <ScrollView
       style={styles.container}
+      onScroll={handleScroll} // Add this line
       contentContainerStyle={{ paddingBottom: 20 }}
     >
+          <Animated.View style={{ opacity: fadeAnim }}>
 <ResourceInfo parentCommentId={parentId} />
        <CommentsDashboard
         onAddComment={handleShowAddCommentForm}
@@ -297,7 +324,8 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       {/* Optional: Display a heading when viewing child comments */}
       {parentId && <Text style={styles.headingText}>Replies</Text>}
       {!hasItems && (
-        <NoItemsFound onReturnToRoot={handleBackToFirstPage} />
+        <NoItemsFound onReturnToRoot={handleBackToFirstPage} 
+        onReturnToMainRoot={handleBack}/>
       )}
 
       {/* Render Comments */}
@@ -324,13 +352,16 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
 
       {/* Show loading indicator when loading more comments */}
       {loadingMore && <ActivityIndicator style={styles.loadingMoreIndicator} />}
+      </Animated.View>
     </ScrollView>
+      
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     padding: 5,
+    maxWidth:600,
   },
   loadingIndicator: {
     flex: 1,

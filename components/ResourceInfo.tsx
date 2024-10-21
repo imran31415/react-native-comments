@@ -1,7 +1,5 @@
-// ResourceInfo.tsx
-// ResourceInfo.tsx
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { Animated, View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Card } from 'react-native-paper';
 import ExpandableText from './ExpandableText'; // Ensure the path is correct based on your project structure
 
@@ -16,9 +14,10 @@ const ResourceInfo: React.FC<ResourceInfoProps> = ({ parentCommentId }) => {
     header: 'Breakthrough Discovery: Scientists Confirm Evidence of Extraterrestrial Life',
     description: 'A team of international scientists has announced the detection of unmistakable signs of alien life, marking a monumental milestone in human history.',
     content: `
-  In an unprecedented scientific achievement, researchers from the Global Astrobiology Institute (GAI) have confirmed the existence of extraterrestrial life forms. The discovery was made using advanced telescopic technology and sophisticated data analysis techniques that detected bio-signatures previously thought to be unattainable.
-  
-  ...`, // Shortened for brevity
+      In an unprecedented scientific achievement, researchers from the Global Astrobiology Institute (GAI) have confirmed the existence of extraterrestrial life forms. The discovery was made using advanced telescopic technology and sophisticated data analysis techniques that detected bio-signatures previously thought to be unattainable.
+      
+      ...
+    `,
     author: 'Dr. Elena Ramirez',
     images: [
       'https://i.imgur.com/XlxjRBr.jpeg',
@@ -27,36 +26,54 @@ const ResourceInfo: React.FC<ResourceInfoProps> = ({ parentCommentId }) => {
     ],
   };
 
+  // Animation value
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity
+
+  // Start the fade-in animation on component mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1, // Fade in
+      duration: 300, // Duration of the fade
+      useNativeDriver: true, // Use native driver for performance
+    }).start();
+  }, []);
+
   return (
-    <Card style={styles.card}>
-      <Card.Content>
-        {/* Conditional rendering based on parentCommentId */}
-        {parentCommentId ? (
-          // Show only title and author when in reply mode
-          <View>
-            <Text style={styles.header}>{resource.header}</Text>
-            <Text style={styles.author}>By: {resource.author}</Text>
-          </View>
-        ) : (
-          <>
-            {/* Full resource information when not in reply mode */}
-            <Text style={styles.header}>{resource.header}</Text>
-            <Text style={styles.author}>By: {resource.author}</Text>
-            <Text style={styles.description}>{resource.description}</Text>
-
-            {/* Content with ExpandableText */}
-            <ExpandableText text={resource.content} style={styles.content} characterLimit={100} />
-
-            {/* Images */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
-              {resource.images.slice(0, 3).map((imageUri, index) => (
-                <Image key={index} source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
-              ))}
-            </ScrollView>
-          </>
-        )}
-      </Card.Content>
-    </Card>
+    <Animated.View style={{ opacity: fadeAnim }}>
+      <Card style={styles.card}>
+        <Card.Content>
+          {/* Conditional Rendering Based on parentCommentId */}
+          {parentCommentId ? (
+            <>
+              <Text style={styles.header}>{resource.header}</Text>
+              <Text style={styles.author}>By: {resource.author}</Text>
+            </>
+          ) : (
+            <>
+              {/* Full Resource Info Display */}
+              <Text style={styles.header}>{resource.header}</Text>
+              <Text style={styles.author}>By: {resource.author}</Text>
+              <Text style={styles.description}>{resource.description}</Text>
+              <ExpandableText
+                text={resource.content}
+                style={styles.content}
+                characterLimit={100}
+              />
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageContainer}>
+                {resource.images.slice(0, 3).map((imageUri, index) => (
+                  <Image
+                    key={index}
+                    source={{ uri: imageUri }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                ))}
+              </ScrollView>
+            </>
+          )}
+        </Card.Content>
+      </Card>
+    </Animated.View>
   );
 };
 
@@ -101,7 +118,6 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 5,
-
   },
 });
 
