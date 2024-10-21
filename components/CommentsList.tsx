@@ -24,6 +24,7 @@ import AddCommentForm from './AddCommentForm';
 import { Card } from 'react-native-paper';
 import CommentsDashboard from './CommentsDashboard'; // Import the updated component
 import NoItemsFound from './NoItemsFound';
+import ResourceInfo from './ResourceInfo'; // Adjust the path based on your project structure
 
 interface CommentsListProps {
   resourceId: string;
@@ -57,7 +58,7 @@ const addCommentToComments = (
 
 // Helper function to map SortOrder enum to string
 const getSortOrderString = (order: SortOrder): 'ASC' | 'DESC' => {
-  switch(order) {
+  switch (order) {
     case SortOrder.ASC:
       return 'ASC';
     case SortOrder.DESC:
@@ -109,21 +110,21 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
         ...(formattedPaginationKey ? { string_key: formattedPaginationKey } : {}),
         filters: parentId
           ? {
-              filters: [
-                {
-                  field: CommentFilterField.FILTER_PARENT_ID,
-                  value: parentId,
-                },
-              ],
-            }
+            filters: [
+              {
+                field: CommentFilterField.FILTER_PARENT_ID,
+                value: parentId,
+              },
+            ],
+          }
           : {
-              filters: [
-                {
-                  field: CommentFilterField.FILTER_NULL_PARENT_ID,
-                  value: '',
-                },
-              ],
-            },
+            filters: [
+              {
+                field: CommentFilterField.FILTER_NULL_PARENT_ID,
+                value: '',
+              },
+            ],
+          },
       };
 
       console.log('Fetching comments with params:', params);
@@ -159,7 +160,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     setParentId(selectedComment.id); // Set the parentId to load its replies
     setCurrentParentId(selectedComment.id); // Set the currentParentId for the form
     setPaginationKey(null); // Reset pagination key to fetch from the beginning
-    setShowAddCommentForm(false); // Show the AddCommentForm
+    setShowAddCommentForm(false); // Hide the AddCommentForm
   };
 
   // Handler for adding a new comment
@@ -176,13 +177,11 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     }
 
     // Hide the AddCommentForm
-    // setShowAddCommentForm(false);
     setCurrentParentId(null); // Reset parent ID tracking
-    // Do NOT reset parentId to maintain the current context
+    setShowAddCommentForm(false);
   };
 
   // Handler to go back to the main comments list
-
   const handleBack = async () => {
     setParentId(null);
     setParentComment(null);
@@ -190,7 +189,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     setComments([]);           // Reset comments
     setPaginationKey(null);    // Reset paginationKey
     setAllLoaded(false);       // Reset allLoaded flag
-  
+
     try {
       await loadComments();
     } catch (error) {
@@ -198,10 +197,8 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       Alert.alert('Error', 'Failed to refresh comments.');
     }
   };
+
   const handleBackToFirstPage = () => {
-    // setParentId(null);
-    // setParentComment(null);
-    // setShowAddCommentForm(false);
     setComments([]);           // Reset comments
     setPaginationKey(null);    // Reset paginationKey
     setAllLoaded(false);       // Reset allLoaded flag
@@ -211,13 +208,11 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   // Handler to show the AddCommentForm for top-level comments
   const handleShowAddCommentForm = () => {
     setShowAddCommentForm(true); // Show the form
-    
   };
 
   // Handler to hide the AddCommentForm without submitting
   const hideAddCommentForm = () => {
     setShowAddCommentForm(false);
-    // setCurrentParentId(null);
   };
 
   // Handler to refresh comments
@@ -244,27 +239,8 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
       style={styles.container}
       contentContainerStyle={{ paddingBottom: 20 }}
     >
-      {/* Replace the existing buttons with CommentsDashboard */}
-      <CommentsDashboard
-        onAddComment={handleShowAddCommentForm}
-        onRefresh={refreshComments}
-        paginationKey={paginationKey}
-        sortOrder={getSortOrderString(sortOrder)}
-        currentPageCount={currentPageCount}
-        hasItems={hasItems} // New prop to indicate if items are present
-      />
-     
-
-
-      {/* Conditionally Render AddCommentForm */}
-      {showAddCommentForm && (
-        <AddCommentForm
-          resourceId={resourceId}
-          onCommentAdded={handleCommentAdded}
-          parentId={currentParentId} // Pass the current parentId (null for top-level)
-          hideAddCommentForm={hideAddCommentForm} // Pass the hide function
-        />
-      )}
+      {/* Render ResourceInfo */}
+      <ResourceInfo />
 
       {/* Display "Back" button when viewing child comments */}
       {parentId && (
@@ -272,7 +248,6 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
           <Button title="← Back to all comments" onPress={handleBack} />
         </View>
       )}
-
       {/* Display Parent Comment Information when viewing child comments */}
       {parentComment && (
         <View style={styles.parentCommentContainer}>
@@ -287,6 +262,29 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
           </Card>
         </View>
       )}
+
+      {/* Replace the existing buttons with CommentsDashboard */}
+      <CommentsDashboard
+        onAddComment={handleShowAddCommentForm}
+        onRefresh={refreshComments}
+        paginationKey={paginationKey}
+        sortOrder={getSortOrderString(sortOrder)}
+        currentPageCount={currentPageCount}
+        hasItems={hasItems} // New prop to indicate if items are present
+      />
+
+      {/* Conditionally Render AddCommentForm */}
+      {showAddCommentForm && (
+        <AddCommentForm
+          resourceId={resourceId}
+          onCommentAdded={handleCommentAdded}
+          parentId={currentParentId} // Pass the current parentId (null for top-level)
+          hideAddCommentForm={hideAddCommentForm} // Pass the hide function
+        />
+      )}
+
+
+
 
       {/* Optional: Display a heading when viewing child comments */}
       {parentId && <Text style={styles.headingText}>Replies</Text>}
@@ -326,28 +324,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
   },
-  // Remove or comment out existing top button styles as they're now in CommentsDashboard
-  /*
-  topButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  topAddCommentButton: {
-    flex: 1,
-    marginRight: 5,
-  },
-  refreshButton: {
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  backToRootButton: {
-    flex: 1,
-    marginLeft: 5,
-  },
-  */
-
   loadingIndicator: {
     flex: 1,
     justifyContent: 'center',

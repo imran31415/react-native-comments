@@ -8,10 +8,12 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { createComment } from './api';
 
 import { Comment as CommentType } from '../proto/comments/comments';
+import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons for the close icon
 
 interface AddCommentFormProps {
   resourceId: string;
@@ -64,6 +66,14 @@ const AddCommentForm: React.FC<AddCommentFormProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Header with Hide Button */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Add a Comment</Text>
+        <TouchableOpacity onPress={hideAddCommentForm} accessibilityLabel="Hide comment form">
+          <MaterialIcons name="close" size={24} color="#555" />
+        </TouchableOpacity>
+      </View>
+
       {parentId && (
         <Text style={styles.replyingText}>
           Replying to comment ID: {parentId}
@@ -116,7 +126,19 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f2f2f2',
     borderRadius: 8,
-    maxWidth:1000,
+    maxWidth: 1000,
+    position: 'relative', // To position the close button if needed
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   replyingText: {
     marginBottom: 10,

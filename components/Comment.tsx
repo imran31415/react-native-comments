@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, ActivityIndicator, StyleSheet } from 'react-native';
-import { Card, IconButton } from 'react-native-paper';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { Card, IconButton, Divider } from 'react-native-paper';
 import { fetchComments } from './api';
 import { 
   Comment as CommentType, 
@@ -9,6 +9,7 @@ import {
   CommentFilterField, 
   GetPaginatedCommentsRequest 
 } from '../proto/comments/comments';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // Extend the Comment type to include children
 type CommentWithChildren = CommentType & {
@@ -23,7 +24,7 @@ interface CommentProps {
 }
 
 const MAX_LEVEL = 2;
-const INDENT_PER_LEVEL = 10;
+const INDENT_PER_LEVEL = 20; // Increased indentation for better visibility
 
 const Comment: React.FC<CommentProps> = ({
   comment,
@@ -100,95 +101,143 @@ const Comment: React.FC<CommentProps> = ({
   const isBeyondMaxLevel = level > MAX_LEVEL;
 
   return (
-    <Card
-      style={[
-        styles.card,
-        {
-          marginLeft: indentation,
-          opacity: isBeyondMaxLevel ? 0.9 : 1,
-        },
-      ]}
-    >
-      <Card.Content>
-        <View style={styles.header}>
-          <Text style={styles.authorText}>{`#${comment.id} ${comment.author}`}</Text>
-          <IconButton
-            icon="comment-outline"
-            size={20}
-            onPress={() => handleMoreReplies(comment)}
-            accessibilityLabel="Reply"
-          />
-        </View>
-        <Text style={styles.contentText}>{comment.content}</Text>
-        <Text style={styles.dateText}>{new Date(comment.createdAt).toLocaleString()}</Text>
+    <View style={{ marginLeft: indentation, marginTop: 10 }}>
+      <Card style={styles.card}>
+        <Card.Content>
+          {/* Header Section */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.label}>Author:</Text>
+              <Text style={styles.authorText}>{comment.author}</Text>
+            </View>
+            <Text style={styles.dateText}>{new Date(comment.createdAt).toLocaleString()}</Text>
+          </View>
 
-        {/* Render child comments */}
-        {children.map((childComment) => (
-          <View key={childComment.id}>
+          <Divider style={styles.divider} />
+
+          {/* Content Section */}
+          <View style={styles.contentSection}>
+            <Text style={styles.label}>Comment:</Text>
+            <Text style={styles.contentText}>{comment.content}</Text>
+          </View>
+
+          {/* Action Section */}
+          <View style={styles.actionSection}>
+            <IconButton
+              icon="reply"
+              size={20}
+              onPress={() => handleMoreReplies(comment)}
+              accessibilityLabel="Reply"
+            />
+            {!allChildrenLoaded && (
+              isBeyondMaxLevel ? (
+                <TouchableOpacity
+                  onPress={() => handleMoreReplies(comment)}
+                  style={styles.moreRepliesButton}
+                  accessibilityLabel="More Replies"
+                >
+                  <Text style={styles.moreRepliesText}>More Replies</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => loadChildren(true)}
+                  disabled={loadingChildren}
+                  style={styles.loadMoreButton}
+                  accessibilityLabel="Load More Replies"
+                >
+                  <MaterialIcons
+                    name="keyboard-arrow-down"
+                    size={24}
+                    color={loadingChildren ? 'gray' : '#6200ee'}
+                  />
+                </TouchableOpacity>
+              )
+            )}
+          </View>
+
+          {/* Loading Indicator */}
+          {loadingChildren && <ActivityIndicator size="small" color="#6200ee" style={{ marginTop: 10 }} />}
+
+          {/* Render child comments */}
+          {children.map((childComment) => (
             <Comment
+              key={childComment.id}
               comment={childComment}
               onCommentAdded={onCommentAdded}
               level={level + 1}
               onMoreReplies={onMoreReplies}
             />
-          </View>
-        ))}
-
-        {!allChildrenLoaded && (
-          isBeyondMaxLevel ? (
-            <View style={styles.buttonContainer}>
-            <Button title="More Replies" onPress={() => handleMoreReplies(comment)} />
-            </View>
-          ) : (
-            <View style={styles.buttonContainer}>
-            <Button 
-              title="Load more children"
-              onPress={() => loadChildren(true)}
-              disabled={loadingChildren}
-            />
-                        </View>
-
-          )
-        )}
-
-        {loadingChildren && <ActivityIndicator />}
-      </Card.Content>
-    </Card>
+          ))}
+        </Card.Content>
+      </Card>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    maxWidth:1000,
-    marginVertical: 1,
-    backgroundColor: '#f9f9f9',
-    padding: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    elevation: 5,
-  },
-  authorText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1,
-  },
-  contentText: {
-    // marginBottom: 5,
-  },
-  dateText: {
-    color: 'gray',
-    fontSize: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    elevation: 3, // Adds shadow for Android
+    shadowColor: '#000', // Adds shadow for iOS
+    shadowOffset: { width: 0, height: 2 }, // iOS shadow
+    shadowOpacity: 0.1, // iOS shadow
+    shadowRadius: 4, // iOS shadow
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  buttonContainer: {
-    marginTop: 3,
-    maxWidth: 200, // Limit button width
-    width: '100%', // Allow it to take full width if smaller than maxWidth
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  label: {
+    fontWeight: '600',
+    marginRight: 4,
+    color: '#333333',
+  },
+  authorText: {
+    fontSize: 14,
+    color: '#333333',
+  },
+  dateText: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  divider: {
+    marginVertical: 8,
+    backgroundColor: '#e0e0e0',
+  },
+  contentSection: {
+    marginBottom: 8,
+  },
+  contentText: {
+    fontSize: 14,
+    color: '#444444',
+  },
+  actionSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  loadMoreButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  moreRepliesButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 4,
+    marginLeft: 8,
+  },
+  moreRepliesText: {
+    color: '#6200ee',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
 
