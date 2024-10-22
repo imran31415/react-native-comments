@@ -79,10 +79,11 @@ const ResourceInfo: React.FC<ResourceInfoProps> = ({ parentCommentId }) => {
 
 const styles = StyleSheet.create({
   card: {
+    maxWidth:800,
     padding: 15,
     backgroundColor: '#ffffff',
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 10,
     elevation: 3, // For Android shadow
     shadowColor: '#000', // For iOS shadow
     shadowOffset: { width: 0, height: 2 }, // For iOS shadow

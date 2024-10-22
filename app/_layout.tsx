@@ -1,9 +1,11 @@
+import NavigationBar from "@/components/NavigationBar";
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    <Stack>
+    <><Stack>
+
       <Stack.Screen name="index" />
-    </Stack>
+    </Stack></>
   );
 }

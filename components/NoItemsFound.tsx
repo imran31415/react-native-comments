@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: 'row',
-    backgroundColor: '#28a745',
+    backgroundColor: '#6c757d', // Neutral color for buttons
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 5,

@@ -22,12 +22,13 @@ import {
 
 import Comment from './Comment';
 import AddCommentForm from './AddCommentForm';
-import { Card } from 'react-native-paper';
+import { Card, Divider } from 'react-native-paper';
 import CommentsDashboard from './CommentsDashboard'; // Import the updated component
 import NoItemsFound from './NoItemsFound';
 import ResourceInfo from './ResourceInfo'; // Adjust the path based on your project structure
 
 import { Animated } from 'react-native'; // Ensure Animated is imported
+
 
 interface CommentsListProps {
   resourceId: string;
@@ -81,7 +82,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   const [paginationKey, setPaginationKey] = useState<string | null>(null);
   const [parentId, setParentId] = useState<string | null>(null); // State for tracking parent comment
   const [parentComment, setParentComment] = useState<CommentType | null>(null); // State for parent comment details
-  const [showAddCommentForm, setShowAddCommentForm] = useState<boolean>(false); // Control form visibility
+  const [showAddCommentForm, setShowAddCommentForm] = useState<boolean>(true); // Control form visibility
   const [currentParentId, setCurrentParentId] = useState<string | null>(null); // Track current parent ID for the form
   const [currentPageCount, setCurrentPageCount] = useState<number>(0); // New state for page count
   const sortOrder = SortOrder.DESC; // Define current sort order
@@ -211,7 +212,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
     setParentComment(null);
     setShowAddCommentForm(false);
     setComments([]);           // Reset comments
-    // setPaginationKey(null);    // Reset paginationKey
+    setPaginationKey(null);    // Reset paginationKey
     setAllLoaded(false);       // Reset allLoaded flag
     setCurrentParentId(null);
 
@@ -260,100 +261,105 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
   }
 
   return (
-
+    <>
     <ScrollView
       style={styles.container}
       onScroll={handleScroll} // Add this line
       contentContainerStyle={{ paddingBottom: 20 }}
     >
-          <Animated.View style={{ opacity: fadeAnim }}>
-<ResourceInfo parentCommentId={parentId} />
-       <CommentsDashboard
-        onAddComment={handleShowAddCommentForm}
-        onBack={handleBack}
-        onRefresh={refreshComments}
-        paginationKey={paginationKey}
-        sortOrder={getSortOrderString(sortOrder)}
-        currentPageCount={currentPageCount}
-        hasItems={hasItems} // New prop to indicate if items are present
-        parentId={parentId}
-      />
 
-      {/* Display Parent Comment Information when viewing child comments */}
-      {parentComment && (
-        <View style={styles.parentCommentContainer}>
+        <Animated.View style={{ opacity: fadeAnim }}>
+          <ResourceInfo parentCommentId={parentId} />
+          {parentComment && (
+            <View style={styles.parentCommentContainer}>
+
+
+              <Card style={styles.parentCard}>
+
+                <Card.Content>
+                  <Text style={styles.replyLabelHeader}>Viewing Comments for:</Text>
+
+                  <View style={styles.parentHeader}>
+                    <Image
+                      source={{ uri: 'https://cdn.pixabay.com/photo/2021/02/27/16/25/woman-6055084_1280.jpg' }} // Default placeholder image
+                      style={styles.parentAvatar} />
+                    <Text style={styles.parentAuthorText}>{`#${parentComment.id} ${parentComment.author}`}</Text>
+                  </View>
+
+                  <Text style={styles.parentContentText}>{parentComment.content}</Text>
+                  <Text style={styles.parentDateText}>
+                    {new Date(parentComment.createdAt.replace(' ', 'T')).toLocaleString()}
+                  </Text>
+                </Card.Content>
+              </Card>
+            </View>
+          )}
+          <CommentsDashboard
+            onAddComment={handleShowAddCommentForm}
+            onBack={handleBack}
+            onRefresh={refreshComments}
+            paginationKey={paginationKey}
+            setPaginationKey={setPaginationKey} // Pass the function to set pagination key
+            sortOrder={getSortOrderString(sortOrder)}
+            currentPageCount={currentPageCount}
+            hasItems={hasItems} // New prop to indicate if items are present
+            parentId={parentId} />
+
+          {/* Display Parent Comment Information when viewing child comments */}
           
-          
-          <Card style={styles.parentCard}>
-            
-            <Card.Content>
-            <Text style={styles.replyLabelHeader}>Viewing Comments for:</Text>
 
-            <View style={styles.parentHeader}>
-            <Image 
-                source={{ uri: 'https://cdn.pixabay.com/photo/2021/02/27/16/25/woman-6055084_1280.jpg' }} // Default placeholder image
-                style={styles.parentAvatar}
-              />
-                <Text style={styles.parentAuthorText}>{`#${parentComment.id} ${parentComment.author}`}</Text>
-                </View>
-              
-              <Text style={styles.parentContentText}>{parentComment.content}</Text>
-              <Text style={styles.parentDateText}>
-                {new Date(parentComment.createdAt.replace(' ', 'T')).toLocaleString()}
-              </Text>
-            </Card.Content>
-          </Card>
-        </View>
-      )}
 
-     
 
-      {/* Conditionally Render AddCommentForm */}
-      {showAddCommentForm && (
-        <AddCommentForm
-          resourceId={resourceId}
-          onCommentAdded={handleCommentAdded}
-          parentId={currentParentId} // Pass the current parentId (null for top-level)
-          hideAddCommentForm={hideAddCommentForm} // Pass the hide function
-        />
-      )}
+          {/* Conditionally Render AddCommentForm */}
+          {showAddCommentForm && (
+            <AddCommentForm
+              resourceId={resourceId}
+              onCommentAdded={handleCommentAdded}
+              parentId={currentParentId} // Pass the current parentId (null for top-level)
+              hideAddCommentForm={hideAddCommentForm} // Pass the hide function
+            />
+          )}
 
 
 
 
-      {/* Optional: Display a heading when viewing child comments */}
-      {parentId && <Text style={styles.headingText}>Replies</Text>}
-      {!hasItems && (
-        <NoItemsFound onReturnToRoot={handleBackToFirstPage} 
-        onReturnToMainRoot={handleBack}/>
-      )}
+          {/* Optional: Display a heading when viewing child comments */}
+          {parentId && <Text style={styles.headingText}>Replies</Text>}
+          <Divider></Divider>
+          {!hasItems && (
+            <NoItemsFound onReturnToRoot={handleBackToFirstPage}
+              onReturnToMainRoot={handleBack} />
+          )}
 
-      {/* Render Comments */}
-      {comments.map((comment) => (
-        <Comment
-          key={comment.id}
-          comment={comment}
-          onCommentAdded={handleCommentAdded}
-          level={0} // Start at level 0 for top-level comments
-          onMoreReplies={handleMoreReplies} // Pass the callback to handle "More Replies"
-        />
-      ))}
+          {/* Render Comments */}
+          {comments.map((comment) => (
+            <Comment
+              key={comment.id}
+              comment={comment}
+              onCommentAdded={handleCommentAdded}
+              level={0} // Start at level 0 for top-level comments
+              onMoreReplies={handleMoreReplies} // Pass the callback to handle "More Replies"
+            />
+          ))}
 
-      {/* Load More Button */}
-      {!allLoaded && (
-        <View style={styles.loadMoreContainer}>
-          <Button
-            title="Load more"
-            onPress={() => loadComments(true)}
-            disabled={loadingMore}
-          />
-        </View>
-      )}
+          {/* Load More Button */}
+          {!allLoaded && (
+            <View style={styles.loadMoreContainer}>
+              <Button
+                title="Load more"
+                onPress={() => loadComments(true)}
+                disabled={loadingMore} />
+            </View>
 
-      {/* Show loading indicator when loading more comments */}
-      {loadingMore && <ActivityIndicator style={styles.loadingMoreIndicator} />}
-      </Animated.View>
-    </ScrollView>
+          )}
+
+          {/* Show loading indicator when loading more comments */}
+          {loadingMore && <ActivityIndicator style={styles.loadingMoreIndicator} />}
+        </Animated.View>
+
+      </ScrollView></>
+    
+
       
   );
 };
@@ -361,7 +367,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ resourceId }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 5,
-    maxWidth:600,
+    maxWidth:800,
   },
   loadingIndicator: {
     flex: 1,

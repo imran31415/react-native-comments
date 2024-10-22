@@ -1,3 +1,4 @@
+// components/CommentsDashboard.tsx
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -6,6 +7,7 @@ interface CommentsDashboardProps {
   onAddComment: () => void;
   onRefresh: () => void;
   onBack: () => void;
+  setPaginationKey: (key: string) => void; // New prop to set pagination key
   paginationKey: string | null;
   sortOrder: 'ASC' | 'DESC';
   currentPageCount: number;
@@ -17,6 +19,7 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
   onAddComment,
   onRefresh,
   onBack,
+  setPaginationKey, // Destructure the new prop
   parentId,
   paginationKey,
   sortOrder,
@@ -24,6 +27,19 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
   hasItems,
 }) => {
   const direction = sortOrder === 'ASC' ? 'After' : 'Before';
+
+  // Function to handle refresh and set paginationKey to today's date
+  const handleRefresh = () => {
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    onRefresh(); // Call the onRefresh prop function
+    setPaginationKey(today); // Set the pagination key to today's date
+  };
+
+  // Function to handle going back
+  const handleBack = () => {
+    setPaginationKey(new Date().toISOString().split('T')[0]); // Reset pagination key to today's date
+    onBack(); // Call the original onBack function
+  };
 
   return (
     <View style={styles.container}>
@@ -40,28 +56,28 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
         </TouchableOpacity>
 
         {/* Refresh Button */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.button}
-          onPress={onRefresh}
+          onPress={handleRefresh}
           accessibilityLabel="Refresh Comments"
         >
           <MaterialIcons name="refresh" size={20} color="#ffffff" />
           <Text style={styles.buttonText}>Refresh</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         {parentId && (
           <TouchableOpacity
             style={styles.button}
-            onPress={onBack}
+            onPress={handleBack} // Update to use handleBack
             accessibilityLabel="Back to all comments"
           >
             <MaterialIcons name="arrow-back" size={20} color="#ffffff" />
-            <Text style={styles.buttonText}>Back to main thread</Text>
+            <Text style={styles.buttonText}>Back to main</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      {/* Pagination Information */}
+      {/* Optional Pagination Information */}
       {/* <View style={styles.infoContainer}>
         {paginationKey ? (
           <Text style={styles.infoText}>
@@ -81,13 +97,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     maxWidth: 600,
     padding: 15,
-    backgroundColor: '#ffffff', // Use white for a clean look
-    borderRadius: 10, // Slightly rounded corners
-    elevation: 3, // Shadow effect for depth
-    shadowColor: '#000', // Shadow color for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
-    shadowOpacity: 0.1, // Shadow opacity for iOS
-    shadowRadius: 4, // Shadow radius for iOS
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6c757d', // Neutral color for buttons
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 20, // More rounded edges for a modern look
+    borderRadius: 4, // More rounded edges for a modern look
     alignItems: 'center',
     marginHorizontal: 5,
     shadowColor: '#000',
@@ -108,6 +117,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 1, // Shadow for Android
+    maxWidth: 200,
   },
   buttonText: {
     color: '#ffffff',

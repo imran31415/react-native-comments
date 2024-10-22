@@ -123,10 +123,11 @@ const Comment: React.FC<CommentProps> = ({
 
   return (
     <View style={{ marginLeft: indentation, marginTop: 8 }}>
+  
       <Card style={styles.card}>
         <Card.Content>
         <Text style={styles.dateText}>{new Date(comment.createdAt).toLocaleString()}</Text>
-        <Divider style={styles.divider} />
+        {/* <Divider style={styles.divider} /> */}
 
 
           {/* Header Section */}
@@ -145,7 +146,7 @@ const Comment: React.FC<CommentProps> = ({
 
           </View>
 
-          <Divider style={styles.divider} />
+          {/* <Divider style={styles.divider} /> */}
 
           {/* Content Section */}
           <View style={styles.contentSection}>
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, // iOS shadow
     shadowOpacity: 0.1, // iOS shadow
     shadowRadius: 4, // iOS shadow
-    maxWidth: 600,
+    maxWidth: 800,
   },
   header: {
     flexDirection: 'row',
@@ -243,25 +244,25 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   authorText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#333333',
   },
   dateText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#666666',
     marginTop:5,
-    marginBottom:5,
+    marginBottom:12,
   },
   divider: {
     backgroundColor: '#e0e0e0',
-    marginTop:10,
-    marginBottom:10,
+    marginTop:2,
+    marginBottom:2,
   },
   contentSection: {
     marginTop: 8,
   },
   contentText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#444444',
   },
   actionSection: {
