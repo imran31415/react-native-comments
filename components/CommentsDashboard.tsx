@@ -52,7 +52,7 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
           accessibilityLabel="Add a new comment"
         >
           <MaterialIcons name="add-comment" size={20} color="#ffffff" />
-          <Text style={styles.buttonText}>Add Comment</Text>
+          <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
 
         {/* Refresh Button */}
@@ -62,7 +62,7 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
           accessibilityLabel="Refresh Comments"
         >
           <MaterialIcons name="refresh" size={20} color="#ffffff" />
-          <Text style={styles.buttonText}>Refresh</Text>
+          <Text style={styles.buttonText}>NextPage</Text>
         </TouchableOpacity>
 
         {parentId && (
@@ -72,7 +72,7 @@ const CommentsDashboard: React.FC<CommentsDashboardProps> = ({
             accessibilityLabel="Back to all comments"
           >
             <MaterialIcons name="arrow-back" size={20} color="#ffffff" />
-            <Text style={styles.buttonText}>Back to main</Text>
+            <Text style={styles.buttonText}>Back</Text>
           </TouchableOpacity>
         )}
       </View>
